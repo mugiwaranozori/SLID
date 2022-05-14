@@ -43,7 +43,7 @@ def generate_fold(
             uid=fold_uid,
             extension=input_ext)
         fold_files.extend(glob(os.path.join(input_dir, filename)))
-
+    import ipdb; ipdb.set_trace()
     fold_files = sorted(fold_files)
     fold_files = shuffle(fold_files, random_state=SEED)
 
@@ -80,6 +80,7 @@ def generate_fold(
     filename = "{group}_metadata.fold{index}.npy".format(
         group=group,
         index=fold_index)
+    import ipdb; ipdb.set_trace()
     np.save(
         os.path.join(output_dir, filename),
         metadata)
@@ -105,6 +106,7 @@ def generate_folds(
     uids = common.group_uids(files)
 
     fold_index = 1
+    import ipdb; ipdb.set_trace()
     while has_uids(uids):
         print("[{group}] Fold {index}".format(group=group, index=fold_index))
 

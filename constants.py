@@ -18,4 +18,4 @@ THRESHOLD = 0.8
 
 FRAGMENT_DURATION = 10  # seconds
 
-DATASET_DIST = 'spoken_language_dataset/build'
+DATASET_DIST = r"C:\Users\Enablr02\Documents\Khoer\learning\William\examples\spoken_language_identification\build"

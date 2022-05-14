@@ -28,12 +28,12 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['TF_CUDNN_USE_AUTOTUNE'] = '0'
 
 import tensorflow as tf
-session_conf = tf.ConfigProto(
+session_conf = tf.compat.v1.ConfigProto(
     intra_op_parallelism_threads=1,
     inter_op_parallelism_threads=1)
 from keras import backend as K
-tf.set_random_seed(SEED)
-sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
+tf.random.set_seed(SEED)
+sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
 K.set_session(sess)
 
 from sklearn import preprocessing
@@ -42,12 +42,12 @@ from sklearn.metrics import classification_report
 from keras.models import Model, load_model, Sequential
 from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, Dense, Flatten
 from keras.layers import Dropout, Input, Activation
-from keras.optimizers import Nadam, SGD
+from tensorflow.keras.optimizers import Adam, SGD
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import np_utils
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.models import load_model
-from keras.layers.normalization import BatchNormalization
+from tensorflow.keras.layers import BatchNormalization
 from keras import regularizers
 
 import common
@@ -162,13 +162,13 @@ if __name__ == "__main__":
         label_binarizer, clazzes = common.build_label_binarizer()
 
         test_labels, test_features, test_metadata = common.load_data(
-            label_binarizer, 'build/folds', 'test', [1], input_shape)
+            label_binarizer, "folds", 'test', [1], input_shape)
 
         common.test(test_labels, test_features, test_metadata, model, clazzes)
     else:
         accuracies = []
         generator = common.train_generator(
-            14, 'build/folds', input_shape, max_iterations=1)
+            14, 'folds', input_shape, max_iterations=1)
 
         first = True
         for (train_labels,
