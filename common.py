@@ -124,7 +124,7 @@ def train_generator(fold_count, input_dir, input_shape, max_iterations=1):
         train_labels, train_features, train_metadata = load_data(
             label_binarizer,
             input_dir,
-            'train',
+            'test',
             train_fold_indexes,
             input_shape)
 

@@ -123,7 +123,7 @@ def generate_fb_and_mfcc(signal, sample_rate):
 def process_audio(input_dir, debug=False):
     files = []
 
-    extensions = ['*.flac']
+    extensions = ['*.wav']
     for extension in extensions:
         files.extend(glob.glob(os.path.join(input_dir, extension)))
 
