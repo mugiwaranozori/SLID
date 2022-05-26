@@ -206,6 +206,7 @@ if __name__ == "__main__":
                 callbacks=[checkpoint, earlystop],
                 verbose=1,
                 validation_data=(test_features, test_labels),
+                #test_data=(test_features, test_labels),
                 batch_size=8)
 
             model = load_model('model.h5')

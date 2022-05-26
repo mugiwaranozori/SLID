@@ -36,6 +36,7 @@ def generate_fold(
         for gender in GENDERS:
             fold_uids.append(uids[language][gender].pop())
 
+    print(fold_uids)
     # find files for given uids
     fold_files = []
     for fold_uid in fold_uids:
@@ -43,7 +44,7 @@ def generate_fold(
             uid=fold_uid,
             extension=input_ext)
         fold_files.extend(glob(os.path.join(input_dir, filename)))
-    import ipdb; ipdb.set_trace()
+    
     fold_files = sorted(fold_files)
     fold_files = shuffle(fold_files, random_state=SEED)
 
@@ -80,7 +81,7 @@ def generate_fold(
     filename = "{group}_metadata.fold{index}.npy".format(
         group=group,
         index=fold_index)
-    import ipdb; ipdb.set_trace()
+    
     np.save(
         os.path.join(output_dir, filename),
         metadata)
@@ -102,11 +103,11 @@ def generate_folds(
         os.makedirs(output_dir)
 
     files = glob(os.path.join(input_dir, '*' + input_ext))
-
+    # print(files)
     uids = common.group_uids(files)
 
     fold_index = 1
-    import ipdb; ipdb.set_trace()
+    
     while has_uids(uids):
         print("[{group}] Fold {index}".format(group=group, index=fold_index))
 
@@ -155,24 +156,35 @@ if __name__ == "__main__":
     start = time.time()
 
     # fb
-    generate_folds(
-        os.path.join(common.DATASET_DIST, 'test'),
-        '.fb.npz',
-        output_dir='build/folds',
-        group='test',
-        input_shape=(WIDTH, FB_HEIGHT),
-        normalize=normalize_fb,
-        output_shape=(FB_HEIGHT, WIDTH, COLOR_DEPTH)
-    )
-    generate_folds(
-        os.path.join(common.DATASET_DIST, 'train'),
-        '.fb.npz',
-        output_dir='build/folds',
-        group='train',
-        input_shape=(WIDTH, FB_HEIGHT),
-        normalize=normalize_fb,
-        output_shape=(FB_HEIGHT, WIDTH, COLOR_DEPTH)
-    )
-
+    for lang in LANGUAGES:
+        generate_folds(
+            os.path.join(common.DATASET_DIST,os.path.join('test',lang)),
+            '.fb.npz',
+            output_dir='build/folds',
+            group='test',
+            input_shape=(WIDTH, FB_HEIGHT),
+            normalize=normalize_fb,
+            output_shape=(FB_HEIGHT, WIDTH, COLOR_DEPTH)
+        )
+        generate_folds(
+            os.path.join(common.DATASET_DIST,os.path.join('train',lang)),
+            '.fb.npz',
+            output_dir='build/folds',
+            group='train',
+            input_shape=(WIDTH, FB_HEIGHT),
+            normalize=normalize_fb,
+            output_shape=(FB_HEIGHT, WIDTH, COLOR_DEPTH)
+        )
+        # baru
+        # print(os.path.join(common.DATASET_DIST,os.path.join('val',lang)))
+        generate_folds(
+            os.path.join(common.DATASET_DIST,os.path.join('val',lang)),
+            '.fb.npz',
+            output_dir='build/folds',
+            group='val',
+            input_shape=(WIDTH, FB_HEIGHT),
+            normalize=normalize_fb,
+            output_shape=(FB_HEIGHT, WIDTH, COLOR_DEPTH)
+        )
     end = time.time()
     print("It took [s]: ", end - start)

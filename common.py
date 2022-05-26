@@ -71,7 +71,7 @@ def load_data(label_binarizer, input_dir, group, fold_indexes, input_shape):
     for fold_index in fold_indexes:
         filename = "{group}_metadata.fold{index}.npy".format(
             group=group, index=fold_index)
-        import ipdb; ipdb.set_trace()
+        
         full_address = os.path.join(input_dir, filename)
         full_address = os.path.join(DATASET_DIST, full_address)
         try:
@@ -94,6 +94,7 @@ def load_data(label_binarizer, input_dir, group, fold_indexes, input_shape):
 
     all_metadata = np.concatenate(all_metadata)
     all_features = np.concatenate(all_features)
+    print(all_metadata, all_features)
     all_labels = label_binarizer.transform(all_metadata[:, 0])
 
     print("[{group}] labels: {labels}, features: {features}".format(
@@ -120,25 +121,38 @@ def train_generator(fold_count, input_dir, input_shape, max_iterations=1):
     for fold_index in fold_indexes:
         train_fold_indexes = fold_indexes.copy()
         # train_fold_indexes.remove(fold_index)  #TODO kenapa harus dihapus ya?
-        import ipdb; ipdb.set_trace()
+        
         train_labels, train_features, train_metadata = load_data(
             label_binarizer,
             input_dir,
-            'test',
+            'train',
             train_fold_indexes,
             input_shape)
 
         test_fold_indexes = [fold_index]
-        import ipdb; ipdb.set_trace()
+        
         test_labels, test_features, test_metadata = load_data(
             label_binarizer,
             input_dir,
-            'train',
+            'test',
             test_fold_indexes,
             input_shape)
 
-        yield (train_labels, train_features, test_labels,
-               test_features, test_metadata, clazzes)
+        val_fold_indexes = fold_indexes.copy()
+        val_labels, val_features, val_metadata = load_data(
+            label_binarizer,
+            input_dir,
+            'val',
+            val_fold_indexes,
+            input_shape)
+
+        # yield (train_labels, train_features,
+        #        test_labels, test_features, test_metadata,
+        #        clazzes)
+
+        yield (train_labels, train_features,
+               test_labels, test_features, test_metadata,
+               val_labels, val_features, clazzes)
 
         del train_labels
         del train_features
@@ -147,6 +161,10 @@ def train_generator(fold_count, input_dir, input_shape, max_iterations=1):
         del test_labels
         del test_features
         del test_metadata
+
+        del val_labels
+        del val_features
+        del val_metadata
 
         iteration += 1
         if iteration == max_iterations:
@@ -169,13 +187,18 @@ def group_uids(files):
         uids[language] = dict()
         for gender in GENDERS:
             uids[language][gender] = set()
-
+    
     # extract uids and append to language/gender sets
     for file in files:
+        # import ipdb;ipdb.set_trace()
         info = get_filename(file).split('_')
-
-        language = info[0]
-        gender = info[1]
+        
+        for lang in LANGUAGES:
+            if lang in file.split("\\"):
+                language = lang
+                break
+        
+        gender = 'm'
         uid = info[2].split('.')[0]
 
         uids[language][gender].add(uid)
@@ -192,3 +215,5 @@ if __name__ == "__main__":
     generator = train_generator(3, 'fb', (FB_HEIGHT, WIDTH, COLOR_DEPTH))
     for train_labels, train_features, test_labels, test_features in generator:
         print(train_labels.shape)
+        print("fitur:",train_features)
+        print("label:",train_labels)

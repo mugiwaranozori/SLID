@@ -123,10 +123,12 @@ def generate_fb_and_mfcc(signal, sample_rate):
 def process_audio(input_dir, debug=False):
     files = []
 
-    extensions = ['*.wav']
+    extensions = ['*.flac']
     for extension in extensions:
-        files.extend(glob.glob(os.path.join(input_dir, extension)))
-
+        for lang in LANGUAGES:
+            # files.extend(glob.glob(os.path.join((input_dir +"\\" + lang), extension)))
+            files.extend(glob.glob(os.path.join(os.path.join(input_dir, lang), extension)))
+    
     for file in files:
         if debug:
             file = ('build/test/'
@@ -147,7 +149,7 @@ def process_audio(input_dir, debug=False):
 
         # .npz extension is added automatically
         file_without_ext = os.path.splitext(file)[0]
-
+        # print(file_without_ext)
         np.savez_compressed(file_without_ext + '.fb', data=fb)
 
         if debug:
@@ -170,9 +172,10 @@ if __name__ == "__main__":
     parser.set_defaults(debug=False)
 
     args = parser.parse_args()
-
+    
     if args.debug:
         process_audio(os.path.join(common.DATASET_DIST, 'train'), debug=True)
     else:
         process_audio(os.path.join(common.DATASET_DIST, 'test'))
         process_audio(os.path.join(common.DATASET_DIST, 'train'))
+        process_audio(os.path.join(common.DATASET_DIST, 'val'))
